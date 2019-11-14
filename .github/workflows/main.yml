@@ -14,7 +14,13 @@ jobs:
 
     - name: Generate deployment package
       run: zip deploy.zip *
-      
+
+    - name: Generate build number
+      id: buildnumber
+      uses: einaregilsson/build-number@v1 
+      with:
+        token: ${{secrets.github_token}}        
+
     - name: Deploy to EB
       uses: einaregilsson/beanstalk-deploy@v1
       with:
@@ -22,6 +28,6 @@ jobs:
         aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         application_name: FreeTierDocker-env
         environment_name: free-tier-docker
-        version_label: free-tier-from-github-with-love
+        version_label: ${{ steps.buildnumber.outputs.build_number }}
         region: us-west-2
         deployment_package: deploy.zip
